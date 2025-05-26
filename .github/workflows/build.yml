@@ -13,6 +13,8 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macos-latest]
+      # Don't fail the entire workflow if one OS build fails
+      fail-fast: false
 
     steps:
       - name: Check out repository
@@ -22,17 +24,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
+        timeout-minutes: 15
+
         
       - name: Build for Windows
         run: npm run package:win
         if: matrix.os == 'windows-latest'
+        timeout-minutes: 30
         
       - name: Build for macOS
         run: npm run package:mac
         if: matrix.os == 'macos-latest'
+        timeout-minutes: 30
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -40,3 +47,5 @@ jobs:
           name: ttpg-twitch-helper-${{ matrix.os }}
           path: dist
           if-no-files-found: error
+        timeout-minutes: 10
+
