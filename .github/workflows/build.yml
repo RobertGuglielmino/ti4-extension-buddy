@@ -1,0 +1,42 @@
+name: Build Application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build for Windows
+        run: npm run package:win
+        if: matrix.os == 'windows-latest'
+        
+      - name: Build for macOS
+        run: npm run package:mac
+        if: matrix.os == 'macos-latest'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ttpg-twitch-helper-${{ matrix.os }}
+          path: dist
+          if-no-files-found: error
