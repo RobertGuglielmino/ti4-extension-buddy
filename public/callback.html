@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twitch Authentication</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <h1>Twitch Authentication</h1>
+  <div id="status" class="status">Processing authentication...</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const statusElement = document.getElementById('status');
+      
+      // Parse access token from URL fragment
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const accessToken = params.get('access_token');
+      
+      if (!accessToken) {
+        statusElement.textContent = 'Error: No access token received.';
+        statusElement.className = 'status error';
+        return;
+      }
+      
+      // Send token back to the server
+      fetch('/auth/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ access_token: accessToken })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          statusElement.textContent = 'Authentication successful! Returning to application...';
+          statusElement.className = 'status success';
+          
+          // Refresh the parent window and close this one
+          if (window.opener) {
+            window.opener.location.reload();
+            // Close this window after a short delay
+            setTimeout(() => {
+              window.close();
+            }, 2000);
+          } else {
+            // Fallback if opener is not available
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 2000);
+          }
+        } else {
+          statusElement.textContent = 'Error: ' + (data.error || 'Authentication failed.');
+          statusElement.className = 'status error';
+        }
+      })
+      .catch(error => {
+        statusElement.textContent = 'Error: ' + error.message;
+        statusElement.className = 'status error';
+      });
+    });
+  </script>
+</body>
+</html>
