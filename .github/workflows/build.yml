@@ -35,11 +35,17 @@ jobs:
         run: npm run package:win
         if: matrix.os == 'windows-latest'
         timeout-minutes: 30
-        
+        env:
+          GH_TOKEN: ${{ github.token }}
+          USE_HARD_LINKS: false
+          
       - name: Build for macOS
         run: npm run package:mac
         if: matrix.os == 'macos-latest'
         timeout-minutes: 30
+        env:
+          GH_TOKEN: ${{ github.token }}
+          USE_HARD_LINKS: false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -48,4 +54,5 @@ jobs:
           path: dist
           if-no-files-found: error
         timeout-minutes: 10
+
 
