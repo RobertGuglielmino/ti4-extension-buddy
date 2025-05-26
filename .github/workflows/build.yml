@@ -30,6 +30,9 @@ jobs:
         run: npm ci
         timeout-minutes: 15
 
+      - name: Install dmg-license for macOS
+        if: matrix.os == 'macos-latest'
+        run: npm install dmg-license
         
       - name: Build for Windows
         run: npm run package:win
@@ -46,6 +49,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           USE_HARD_LINKS: false
+          CSC_IDENTITY_AUTO_DISCOVERY: false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -54,5 +58,7 @@ jobs:
           path: dist
           if-no-files-found: error
         timeout-minutes: 10
+
+
 
 
