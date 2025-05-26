@@ -1,5 +1,5 @@
 {
-  "name": "ttpg-twitch-extension-helper",
+  "name": "ti4-extension-buddy",
   "version": "1.0.0",
   "description": "Helper application for TTPG Twitch Extension",
   "main": "main.js",
@@ -12,8 +12,8 @@
     "package:linux": "electron-builder --linux"
   },
   "build": {
-    "appId": "com.yourname.ttpgtwitchhelper",
-    "productName": "TTPG Twitch Helper",
+    "appId": "com.robertguglielmino.ti4extensionbuddy",
+    "productName": "TI4 Extension Buddy",
     "directories": {
       "output": "dist"
     },
@@ -42,7 +42,7 @@
       "category": "Utility"
     }
   },
-  "author": "Your Name",
+  "author": "Robert Guglielmino",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.6.2",
