@@ -50,6 +50,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           USE_HARD_LINKS: false
           CSC_IDENTITY_AUTO_DISCOVERY: false
+          # Add this to bypass Apple's notarization requirement for testing
+          CSC_IDENTITY_PARAM: ''
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -58,6 +60,7 @@ jobs:
           path: dist
           if-no-files-found: error
         timeout-minutes: 10
+
 
 
 
