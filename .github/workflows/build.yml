@@ -43,15 +43,27 @@ jobs:
           USE_HARD_LINKS: false
           
       - name: Build for macOS
-        run: npm run package:mac
+        run: |
+          # Create a temporary keychain
+          security create-keychain -p temppassword build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p temppassword build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+          
+          # Build the app
+          npm run package:mac
         if: matrix.os == 'macos-latest'
         timeout-minutes: 30
         env:
           GH_TOKEN: ${{ github.token }}
           USE_HARD_LINKS: false
           CSC_IDENTITY_AUTO_DISCOVERY: false
-          # Add this to bypass Apple's notarization requirement for testing
+          # Disable code signing completely for CI builds
           CSC_IDENTITY_PARAM: ''
+          # Skip Apple notarization
+          APPLE_NOTARIZE: 'false'
+          # Tell electron-builder to skip signing
+          CSC_FOR_PULL_REQUEST: 'false'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
