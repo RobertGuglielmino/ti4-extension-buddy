@@ -354,8 +354,8 @@ function startExpressServer() {
 
     // console.log("old DATA");
     // console.log(JSON.stringify(preprocessedGameData));
-    console.log("TRANSFORMED DATA");
-    console.log(JSON.stringify(gameData));
+    // console.log("TRANSFORMED DATA");
+    // console.log(JSON.stringify(gameData));
 
     // Log the received data (for debugging)
     if (config.debugMode) {
@@ -586,7 +586,7 @@ async function sendToPubSub(jwt, data) {
 
     const response = await axios.post(endpoint, payload, { headers });
 
-    console.log("Data sent to PubSub sssssssssssssssssuccessfully");
+    process.stdout.write("\rData sent to PubSub successfully");
     return response.data;
   } catch (err) {
     // Enhanced error logging
@@ -1334,26 +1334,26 @@ function getObjectives(data) {
   }
 
   function formatAgendaObjectives() {
-    return AGENDA_POINTS.map((objective) => {
+    let newObjective = {
+      name: "Agenda",
+      description: "",
+      points: 1,
+      scored: [0, 0, 0, 0, 0, 0],
+    };
+
+    AGENDA_POINTS.forEach((objective) => {
       if (data.laws.includes(objective)) {
-        let newObjective = {
-          name: objective,
-          description: "",
-          points: 1,
-          scored: [],
-        };
 
         data.players.forEach((player, index) => {
           if (player.laws.includes(objective)) {
-            newObjective.scored[index] = 1;
-          } else {
-            newObjective.scored[index] = 0;
+            newObjective.scored[index] += 1;
           }
         });
 
-        return newObjective;
       }
     });
+
+    return newObjective;
   }
 
   function formatCrown() {
